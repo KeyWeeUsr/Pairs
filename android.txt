@@ -1,0 +1,4 @@
+title=Pairs
+author=KeyWeeUsr
+orientation=portrait
+fullscreen=1
