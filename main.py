@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Pairs - Memory game with Kivy
-# Version: 0.1
+# Version: 0.2
 # Copyright (C) 2016, KeyWeeUsr(Peter Badida) <keyweeusr@gmail.com>
 # License: MIT
 #
@@ -75,7 +75,9 @@ Builder.load_string('''
     BoxLayout:
         orientation: 'vertical'
         BoxLayout:
-            size_hint: 1, 0.3
+            size_hint: 1, None
+            height: min(self.parent.size[0]*0.1,self.parent.size[1]*0.1)
+            pos: self.pos[0], self.parent.size[1]-self.size[1]
             Button:
                 text: 'Exit'
                 on_release: exit()
@@ -87,13 +89,14 @@ Builder.load_string('''
             Button:
                 text: 'Reset'
                 on_release: root.reset()
-        GridLayout:
-            size_hint: None, None
-            width: self.parent.size[0]*0.7
-            height: self.parent.size[0]*0.7
-            pos: self.parent.size[0]*0.15, self.pos[1]
-            spacing: '10dp'
-            id: content
+        FloatLayout:
+            GridLayout:
+                size_hint: None, None
+                width: min(self.parent.size[0]*0.9,self.parent.size[1]*0.9)
+                height: self.width
+                pos_hint: {'center_x':0.5, 'center_y':0.5}
+                spacing: '10dp'
+                id: content
 
 <Item>:
     on_release: self.choose(self, self.pair)
@@ -104,6 +107,9 @@ class Game(ScreenManager):
     '''Main widget for menu and game screens.'''
 
     def __init__(self, **kw):
+        '''__init__() here is used mostly to let other classes access
+        the class itself and its properties/widgets.'''
+
         self.app = App.get_running_app()
         self.app.game = self
         super(Game, self).__init__(**kw)
@@ -150,6 +156,13 @@ class Game(ScreenManager):
 
 
 class Play(Screen):
+    '''An actual game board with simple Score + points labels at the top.
+    The size of a square is set directly in kv taking the parent's size
+    min(width, height), so it will stay a square regardless of display
+    orientation.
+    A GridLayout is used because of its good effect on making even
+    count of children. FloatLayout only centers the board.'''
+
     def __init__(self, **kw):
         self.app = App.get_running_app()
         self.app.play = self
